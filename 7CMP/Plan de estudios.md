@@ -52,9 +52,47 @@ La verificación de inicio permite asegurarse de que todo el codigo ejecutado vi
 
 Source: https://source.android.com/docs/security/features
 
--   - Android security architecture and its components
+## Android security architecture and its components
+
+La arquitetura de android hace uso del modelo de aislamiento para contruir el sistema operativo de manera segura. 
+
+### Android Security Model
+
+El modelo de aislamiento y sandbox que usa android permite un entorno seguro a la hora de ejecutar codigo en el dispositivo. Pero esto a su vez es muy limitante ya que restringe a la app de poder acceder a las funcionalidades que no tiene acceso.
+
+Una de las limitaciones se puede dar cuando una app carece de funcionalidades utiles tales como la camara, acceso a la red, servicios de localización, etc. Para evitar estas limitaciones android ha implementado una funcionalidad por IDs que permite que cada funcionalidad permitida se pueda comunicar entre si para y permite habilitar el acceso a archivos criticos del sistema.
+
+### Shared User ID
+
+El uso de IDs de usuario compartido permite que el sistema comparta datos entre aplicaiones. Dichas aplicaciones tienen que estar firmadas con el mismo certificado para que esto pueda asignarsele un ID de usuario compartido. De esta manera los desarrolladores pueden bypassear las restricciones del aislamiento.
+
+### Permission
+
+#### Normal _Permission_
+
+Los permisos normales permiten a la palicación a acceder a funcionalidades a nivel de aplicación. Solo permite acceder a datos y recursos fuera de la aplicación en caso de que lo solicitado sea de menor riesgo. El usuario puede administrar este tipo de permisos son dificultad alguna.
+
+#### Dangerous Permission
+
+Este tipo de permisos le permiten a la app acceder a información privada y incluso a funciones que pueden ser criticas en el sistema Android. Por ejemplo la app con estos permisos puede acceder a la galería, la ubicación, o cualquier otra función que permita ganar acceso a los datos privados del usuario.
+
+#### Signature Permission
+
+Los permisos por firma son los que se le conceden a una app cuando es firmada con el mismo certificado de una app previamente instalada con permisos ya asignados.  Esto es similar al Shared User ID.
+
 https://medium.com/@boshng95/android-security-overview-7386022ad55d
--   - Android apps and the filesystem
+
+## Android apps and the filesystem
+
+| | Type of content | Access method | Permissions needed | Can other apps access? | Files removed on app uninstall? | 
+| -- | -- | -- | -- | -- | -- |
+| [App-specific files](https://developer.android.com/training/data-storage/app-specific) | Files meant for your app's use only | From internal storage, `getFilesDir()` or `getCacheDir()` From external storage, `getExternalFilesDir()` or `getExternalCacheDir()` | Never needed for internal storage Not needed for external storage when your app is used on devices that run Android 4.4 (API level 19) or higher | No | Yes |
+| [Media](https://developer.android.com/training/data-storage/shared/media) | Shareable media files (images, audio files, videos) | `MediaStore` API | `READ_EXTERNAL_STORAGE` when accessing other apps' files on Android 11 (API level 30) or higher `READ_EXTERNAL_STORAGE` or `WRITE_EXTERNAL_STORAGE` when accessing other apps' files on Android 10 (API level 29) Permissions are required for **all** files on Android 9 (API level 28) or lower | Yes, though the other app needs the `READ_EXTERNAL_STORAGE` permission | No |
+| [Documents and other files](https://developer.android.com/training/data-storage/shared/documents-files) | Other types of shareable content, including downloaded files | Storage Access Framework | None | Yes, through the system file picker | No |
+| [App preferences](https://developer.android.com/training/data-storage/shared-preferences) | Key-value pairs | [Jetpack Preferences](https://developer.android.com/guide/topics/ui/settings/use-saved-values) library | None | No | Yes |
+| Database | Structured data | [Room](https://developer.android.com/training/data-storage/room) persistence library | None | No | Yes |
+
+
 https://developer.android.com/training/data-storage
 -   - Android app signing, sandboxing and provisioning
 https://source.android.com/docs/security/app-sandbox
