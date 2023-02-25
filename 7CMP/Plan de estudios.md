@@ -1,4 +1,4 @@
-## Topics Included
+# Topics Included
 
 1.  Review of Common Flaws in Source Code and at Runtime
 2.  Modification of App Behavior Through Code/Configuration Changes
@@ -11,8 +11,47 @@
 
 Part 0 - Android Security Crash Course
 
--   - The state of Android Security
-https://duo.com/resources/infographics/the-state-of-android-security
+## The state of Android Security
+### App sandbox
+
+En este caso como Android es un sistema operativo basado en linux usa el mismo sistema para isolar la ejecución de una app de las otras al setearle a cada app un UID con un proceso propio.
+
+### App signing
+
+Las firmas son usadas para identificar el autor de una app y actualizarla para no necesitar un sistema complidado y dificil de usar. Todas las apps deben estar siempre firmadas.
+
+### Authentication
+
+Android implementa la pasarela de autenticación de usuario con llaves criptograficas para validar  el almacenamiento y el proveedor del servicio. 
+
+En los dispositivos con lector de huella el usuario puee setear una o más huellas para desbloquear distintas partes del dispositivo y ejecutar otras tareas. En sistemas menos avanzados se puede usar el patron o la contraseña para garantizar un entorno de ejecución seguro.
+
+### Biometrics
+
+A partir de android 9 se implemento una api que permite a los desarrolladores integrar la autenticación biometrica para asegurar el uso de sus apps.
+
+### Encryption
+
+Una vez que el dispositivo es encriptado toda la información del usuario será encriptada antes de ser subida al disco del dispositivo. De esta manera si un actor no autorizado logra romper la seguridad del dispositivo y gana acceso a los datos no podrá leerlos por estar encriptados.
+
+### Keystore
+
+Android implementa un hardware que provee la generación de keys, la importación y exportación de las mismas para usarse en la encriptación y el decifrado asimetrico con modos de margen apropiados.
+
+### Security-Enhanced Linux
+
+Android al ser un OS basado en linux implementa el modelo de SElinux para asegurar el dispositivo y forzar el uso de la MAC como control de acceso a los procesos incluso cuando los procesos estan si estan siendo ejecutados como root o un superusuario. 
+
+### Trusty Trusted Execution Environment (TEE)
+
+Trusty es un OS seguro que ofrece un entorno de ejecución seguro para android. Trusty ejecuta exactamente los mismos procesos que Android pero este los aisla del resto del software e incluso del hardware.
+
+### Verified Boot
+
+La verificación de inicio permite asegurarse de que todo el codigo ejecutado viene de una fuente segura (usualmente dispositivos OEMs), sobre el codigo de un atacante o un archivo corrupto. Esot establece una cadena de confianza completa, empezando por un hardware  protegido de root hasta la partición de inicio.
+
+Source: https://source.android.com/docs/security/features
+
 -   - Android security architecture and its components
 https://medium.com/@boshng95/android-security-overview-7386022ad55d
 -   - Android apps and the filesystem
