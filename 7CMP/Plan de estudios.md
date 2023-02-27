@@ -1,4 +1,4 @@
-# Topics Included
+## Topics Included
 
 1.  Review of Common Flaws in Source Code and at Runtime
 2.  Modification of App Behavior Through Code/Configuration Changes
@@ -84,6 +84,13 @@ https://medium.com/@boshng95/android-security-overview-7386022ad55d
 
 ## Android apps and the filesystem
 
+Android usa un sistema similar al de un PC en la manera en la que distribuye los archivos en el disco. Por ende, sigue esta estructura:
+
+- **App-specific storage**: Esta parte del almacenamiento guarda todas la información necesaria para que las aplicaciones puedan funcionar correctamente. De esta manera evita que las apps sin permisos adecuados puedan acceder a información privada almacenada en otras partes del disco.
+- **Shared storage**: Aquí se almacenan los archivos que las apps se comparten mutuamente para su uso.
+- **Preferences**: Almacenamiento privado, para guardar información como los pares de llaves.
+- **Databases**: Aquí se genera una base de datos privadas para estructurar datos usando la librearía Room.
+
 | | Type of content | Access method | Permissions needed | Can other apps access? | Files removed on app uninstall? | 
 | -- | -- | -- | -- | -- | -- |
 | [App-specific files](https://developer.android.com/training/data-storage/app-specific) | Files meant for your app's use only | From internal storage, `getFilesDir()` or `getCacheDir()` From external storage, `getExternalFilesDir()` or `getExternalCacheDir()` | Never needed for internal storage Not needed for external storage when your app is used on devices that run Android 4.4 (API level 19) or higher | No | Yes |
@@ -92,12 +99,55 @@ https://medium.com/@boshng95/android-security-overview-7386022ad55d
 | [App preferences](https://developer.android.com/training/data-storage/shared-preferences) | Key-value pairs | [Jetpack Preferences](https://developer.android.com/guide/topics/ui/settings/use-saved-values) library | None | No | Yes |
 | Database | Structured data | [Room](https://developer.android.com/training/data-storage/room) persistence library | None | No | Yes |
 
+### Categories of storage locations
+
+Android provee dos formas de almacenar la información: el almacenamiento interno y el almacenamiento externo. En la mayoría de los dispositivos el almacenamiento interno es menor al externo, pero el almacenamiento externo no siempre esta disponible. Es por eso que las aplicaciones usan el almacenamiento interno para almacenar la información y los datos de las apps instaladas.
+
+En cualquier caso, esto se puede cambiar al modificar esta linea en el manifiesto del APK:
+
+```xml
+<manifest ...  **android:installLocation="preferExternal"**>  ...</manifest>
+```
+
+### Permissions and access to external storage
+
+Android define los siguientes permisos en el almacenamiento: [`READ_EXTERNAL_STORAGE`](https://developer.android.com/reference/android/Manifest.permission#READ_EXTERNAL_STORAGE), [`WRITE_EXTERNAL_STORAGE`](https://developer.android.com/reference/android/Manifest.permission#WRITE_EXTERNAL_STORAGE), y [`MANAGE_EXTERNAL_STORAGE`](https://developer.android.com/reference/android/Manifest.permission#MANAGE_EXTERNAL_STORAGE).
+
+En las versiones más antiguas de android hacía falta definir el READ_EXTERNAL_STORAGE para que las apps pudieran acceder a los archivos del sistema. Pero en las versiones más actuales, Android se fija más en el hecho de la ubicación del archivo que en la configuración de los permisos para mostrar un archivo a un APK, al punto de que en Android 11 ya los permisos directamente no afectan en nada en esto.
+
+### Scoped storage
+
+Este es un tipo de almacenamiento que esta disponible a partir de android 10 y esta pensado para otorgarle cierto control a las apps de usar el almacenamiento externo por default. Eso si, estas apps solo pueden acceder a determinadas locaciones del almacenamiento externo.
 
 https://developer.android.com/training/data-storage
--   - Android app signing, sandboxing and provisioning
+## Android app signing, sandboxing and provisioning
+
+Android aprovecha la protección basada en usuario de Linux, ya que es un sistema basado en el mismo. De esta manera aisla la aplicación y los recursos que esta usando y evita que se puedan acceder de manera externa.
+
+Como este sistema de seguridad nace desde el kernel, esto permite que el modelo se pueda extender tanto a la aplicación como al sistema operativo en si mismo. Esto significa que absolutamente todo lo que necesita el sistema operativo para funcionar (y lo que no) es lanzado usando el sandbox.
+
+### Protections
+
+Generalmente, para poder sacar una aplicacación del sandbox en un dispositivo bien configurado no es muy fácil. Pero como siempre ocurre, según el modelo y la versión de Android pueden existir maneras de bypassear la protección del Sandbox.
+
+-   In Android 5.0, SELinux provided mandatory access control (MAC) separation between the system and apps. However, all third-party apps ran within the same SELinux context so inter-app isolation was primarily enforced by UID DAC.
+-   In Android 6.0, the SELinux sandbox was extended to isolate apps across the per-physical-user boundary. In addition, Android also set safer defaults for application data: For apps with `targetSdkVersion >= 24`, default DAC permissions on an app's home dir changed from 751 to 700. This provided safer default for private app data (although apps may override these defaults).
+-   In Android 8.0, all apps were set to run with a `seccomp-bpf` filter that limited the syscalls that apps were allowed to use, thus strengthening the app/kernel boundary.
+-   In Android 9 all non-privileged apps with `targetSdkVersion >= 28` must run in individual SELinux sandboxes, providing MAC on a per-app basis. This protection improves app separation, prevents overriding safe defaults, and (most significantly) prevents apps from making their data world accessible.
+-   In Android 10 apps have a limited raw view of the filesystem, with no direct access to paths like /sdcard/DCIM. However, apps retain full raw access to their package-specific paths, as returned by any applicable methods, such as [Context.getExternalFilesDir()](https://developer.android.com/reference/android/content/Context.html#getExternalFilesDir(jav%20a.lang.String)).
+
+### Guidelines for sharing files
+
+El almacenamiento se puede setear para que sea accesible para todo el mundo, pero esto no es una buena practica ya que no se puede limitar a que solo pueda acceder la aplicación que deseamos. Esta practica ha conllevado a que se produzcan information disclousures y information leakages con los cuales se han logrado escalar a vulnerabilidades mayores.
+
+En Android 9 y versiones más nuevas, compartir archivos de esta manera ya no esta permitido en las aplicaciones que tengan seteado `targetSdkVersion>=28`
+
+- Si la aplicación necesita compartir información o datos con otra app una manera de lograr esto es con un proveedor de contenido. De esta manera se pueden compartir datos con los permisos adecuados y las restricciones adecuadas ya que se estaría usando los permisos que se usan en los sistemas UNIX.
+- Si la aplicación tiene datos que deben ser compartidos con todo el sistema, deben ser datos de tipo media (fotos, videos y audios) y además de eso debe  estar guardados en el MediaStorage para que se puedan acceder a ellos de manera segura.
+
 https://source.android.com/docs/security/app-sandbox
 -   - Recommended lab setup tips
-Part 1 - Static Analysis with Runtime Checks
+## Part 1 - Static Analysis with Runtime Checks
 
 -   - Tools and techniques to retrieve/decompile/reverse and review APKs
 https://medium.com/helpshift-engineering/reverse-engineer-your-favorite-android-app-863a797042a6
