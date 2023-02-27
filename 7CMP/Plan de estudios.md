@@ -1,4 +1,4 @@
-## Topics Included
+# Topics Included
 
 1.  Review of Common Flaws in Source Code and at Runtime
 2.  Modification of App Behavior Through Code/Configuration Changes
@@ -11,7 +11,7 @@
 
 Part 0 - Android Security Crash Course
 
-## The state of Android Security
+# The state of Android Security
 ### App sandbox
 
 En este caso como Android es un sistema operativo basado en linux usa el mismo sistema para isolar la ejecución de una app de las otras al setearle a cada app un UID con un proceso propio.
@@ -147,19 +147,50 @@ En Android 9 y versiones más nuevas, compartir archivos de esta manera ya no es
 
 https://source.android.com/docs/security/app-sandbox
 -   - Recommended lab setup tips
-## Part 1 - Static Analysis with Runtime Checks
+# Part 1 - Static Analysis with Runtime Checks
 
--   - Tools and techniques to retrieve/decompile/reverse and review APKs
+## Tools and techniques to retrieve/decompile/reverse and review APKs
+
+- Apktool
+- Dex2jar
+- JD-GUI
+Para empezar a decompilar se debe hacer lo siguiente:
+
+- Primero se debe dercargar el apk.
+- Luego se debe ejecutar lo siguiente en la terminal
+
+```bash
+apktool d --no-src <apk name>
+```
+
+- Ejecutando el comando de arriba se puede decompilar el APK en un archivo que pueda ser legible por un humano y también se puede obtener el XML del APK. Todos los archivos terminan convirtiendose en sus archivos originales.
+### Obteniendo el codigo fuente
+
+El codigo se puede obtener a traves de los archivos .dex. Estos archivos se pueden convertir a archivos jar usando dex2jar que es una herramienta que decompila los archivos dex para obtener el archivo jar orginal.
+
+- Para lograr esto primero se debe tener una copia de dex2jar en la carpeta donde decompilamos el APK
+- Tenemos que crear la carpeta "Dex2jar" en la carpeta anterior a donde decompilamos el apk. Luego debemos ejecutar los siguientes comandos `chmod u+x d2j_invoke.sh` y `chmod u+x d2j-dex2jar.sh` para habilitar la ejecución del dex2jar.
+- Ahora ejecuta `/d2j-dex2jar.sh <apk-name>_classes.dex` en la carpeta dex2jar. Esto va a crear el archivo `<apk-name>_classes-dex2jar.jar` dentro de la carpeta dex2jar
+
+Ya con esto listo se puede usar JD-GUI para ver como funcionaría el codigo:
+
+- Abre JD-GUI usando las intrucciones de este [link](https://github.com/java-decompiler/jd-gui)
+- Usando JD-GUI se debe abrir el `<apk-name>_classes-dex2jar.jar` que esta en la carpeta dex2jar.
+
+Ya con esto se podrá analizar el codigo fuente de cualquier aplicación sin mucha complicación.
+
 https://medium.com/helpshift-engineering/reverse-engineer-your-favorite-android-app-863a797042a6
--   - Identification of the attack surface of Android apps and general information gathering
+## Identification of the attack surface of Android apps and general information gathering
 https://redhuntlabs.com/blog/the-current-state-of-security-privacy-and-attack-surface-on-android-scanning-apps-for-secrets-and-more-wave-8.html
--   - Identification of common vulnerability patterns in Android apps:
-    -  + Hardcoded secrets
-    https://developer.android.com/topic/security/risks/hardcoded-cryptographic-secrets?hl=es-419
-    https://blog.ostorlab.co/hardcoded-secrets.html
-    -  + Logic bugs
-    https://downloads.immunityinc.com/infiltrate-archives/[Infiltrate]%20Geshev%20and%20Miller%20-%20Logic%20Bug%20Hunting%20in%20Chrome%20on%20Android.pdf
-    -  + Access control flaws
+## Identification of common vulnerability patterns in Android apps:
+- Hardcoded secrets
+Este ataque se da cuando los desarrolladores dejan información sensible de manera codificada en la app que se podría decodificar con ingeniería inversa o con conocimientos criptograficos.
+https://developer.android.com/topic/security/risks/hardcoded-cryptographic-secrets?hl=es-419
+https://blog.ostorlab.co/hardcoded-secrets.html
+- Logic bugs
+Este tipo de bugs son los que se generan cuando un atacante exploitea la logica del negocio para causar un comportamiento dañino para el mismo. Esto ocurre cuando se exploitean funcionalidades que en un principio son seguras pero que si se usan de determinada manera pueden ser maliciosas.
+https://downloads.immunityinc.com/infiltrate-archives/[Infiltrate]%20Geshev%20and%20Miller%20-%20Logic%20Bug%20Hunting%20in%20Chrome%20on%20Android.pdf
+-  Access control flaws
     https://onappsec.com/diva-android-access-control-issues/
     -  + Intents
     https://developer.android.com/guide/components/intents-filters?hl=es-419
@@ -178,7 +209,7 @@ https://redhuntlabs.com/blog/the-current-state-of-security-privacy-and-attack-su
     https://www.youtube.com/watch?v=sXcmJTidzlI
     -  + Dealing with apps in foreign languages and more
     https://developer.android.com/guide/topics/resources/app-languages
-Part 2 - Dynamic Analysis
+# Part 2 - Dynamic Analysis
 
 -   - Monitoring data: LogCat, Insecure file storage, Android Keystore, etc.
 https://www.androidpolice.com/check-data-use-android-phone-tablet/
@@ -195,11 +226,11 @@ https://medium.com/@click4abhishekagarwal/pin-there-done-that-93033a351354
 -   - Modifying app behaviour at runtime
 https://stackoverflow.com/questions/49470807/how-to-elegantly-change-the-programs-behavior-at-runtime
 https://httptoolkit.com/blog/android-reverse-engineering/
-Part 3 - Test Your Skills
+# Part 3 - Test Your Skills
 
 -   - CTF time, including finding IoT vulnerabilities through app analysis
 
-Part 0 - iOS Security Crash Course
+# Part 0 - iOS Security Crash Course
 
 -   - The state of iOS Security
 https://support.apple.com/guide/security/welcome/web
@@ -211,7 +242,7 @@ https://developer.apple.com/documentation/technotes/tn3125-inside-code-signing-p
 https://developer.apple.com/library/archive/documentation/FileManagement/Conceptual/FileSystemProgrammingGuide/FileSystemOverview/FileSystemOverview.html
 -   - Recommended lab setup tips
 
-Part 1 - Static Analysis with runtime checks
+# Part 1 - Static Analysis with runtime checks
 
 -   - Tools and techniques to retrieve/decompile/reverse and review IPAs
 https://www.corellium.com/blog/ios-mobile-reverse-engineering
@@ -241,7 +272,7 @@ https://medium.com/securing/pentesting-ios-apps-without-jailbreak-91809d23f64e
 https://www.youtube.com/watch?v=Ehd69t7S44I
 https://developer.apple.com/forums/thread/692391
 
-Part 2 - Dynamic Analysis
+# Part 2 - Dynamic Analysis
 
 -   - Monitoring data: caching, logs, app files, insecure file storage, iOS keychain, etc.
 https://www.kodeco.com/20952676-monitoring-for-ios-with-metrickit-getting-started
@@ -266,6 +297,6 @@ https://www.youtube.com/watch?v=5AZhfBAVgLs
 https://www.youtube.com/watch?v=UlmataDRLx0
 https://mobile-security.gitbook.io/mobile-security-testing-guide/ios-testing-guide/0x06c-reverse-engineering-and-tampering
 
-Part 3 - Test your Skills
+# Part 3 - Test your Skills
 
 -   - CTF time, including finding IoT vulnerabilities through app analysis
