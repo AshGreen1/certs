@@ -1,4 +1,3 @@
-
 ## Temario:
 
 1.  Review of Common Flaws in Source Code and at Runtime
@@ -15,7 +14,7 @@ https://0xdf.gitlab.io/2022/10/08/htb-opensource.html
 https://systemweakness.com/hack-the-box-htb-updown-walkthrough-940cf677cdc
 
 
-**Section 1: Hacking Modern Web apps by Example**
+## Section 1: Hacking Modern Web apps by Example
 
 Part 0 - Modern Web Apps Security Crash Course
 -   - The state of Modern Web Apps Security

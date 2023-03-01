@@ -191,24 +191,49 @@ https://blog.ostorlab.co/hardcoded-secrets.html
 Este tipo de bugs son los que se generan cuando un atacante exploitea la logica del negocio para causar un comportamiento dañino para el mismo. Esto ocurre cuando se exploitean funcionalidades que en un principio son seguras pero que si se usan de determinada manera pueden ser maliciosas.
 https://downloads.immunityinc.com/infiltrate-archives/[Infiltrate]%20Geshev%20and%20Miller%20-%20Logic%20Bug%20Hunting%20in%20Chrome%20on%20Android.pdf
 -  Access control flaws
-    https://onappsec.com/diva-android-access-control-issues/
-    -  + Intents
-    https://developer.android.com/guide/components/intents-filters?hl=es-419
-    -  + Cool injection attacks and more
-    https://developer.android.com/topic/security/risks/sql-injection
-    https://www.hindawi.com/journals/scn/2018/2489214/
--   - The art of repackaging:
-    -  + Tips to get around not having root
-    https://www.androidauthority.com/android-hacks-you-can-do-without-rooting-636661/
-    -  + Manipulating the Android Manifest
-    https://doc.batch.com/cordova/advanced/android-manifest-manipulation/
-    - + Defeating SSL/TLS pinning
-    https://httptoolkit.com/blog/frida-certificate-pinning/
-    - + Defeating root detection
-    https://www.youtube.com/watch?v=4X_go9r4nxM
-    https://www.youtube.com/watch?v=sXcmJTidzlI
-    -  + Dealing with apps in foreign languages and more
-    https://developer.android.com/guide/topics/resources/app-languages
+https://onappsec.com/diva-android-access-control-issues/
+-  Intents
+Un intent es un objeto de mensajería que se puede usar para solicitar una acción en otro componente de la app. Estos pueden iniciar un servicio, iniciar una actividad o tranmitir una emisión.
+
+Existen dos tipos, la intent implicita y la explicita. La primera no declara el componente pero si declara una acción en general; en cambio la implicita declara el componente y demás información relacionada.
+https://developer.android.com/guide/components/intents-filters?hl=es-419
+- Cool injection attacks and more
+SQLi:
+
+Similar a las SQLi en web, en android se pueden conseguir al manipular el input de un parametro para que este reciba una query SQL maliciosa. Aunque también existen las vulnerabilidades SQL por los content provider (algo que no existen en las SQLi en webs), las cuales se pueden dar en dos casos:
+1. Que multiples content providers compartan el acceso a una base de datos sqlite, lo que significa que si uno de los content providers es vulnerado podrá ganar acceso a todos los demás
+2. Un content provider tiene muchos permisos a la hora de escribir información en una base de datos, lo que podría usarse para ganar permisos y acceso a partes donde en un inicio no se podría acceder.
+ https://developer.android.com/topic/security/risks/sql-injection
+ 
+## The art of repackaging:
+- Tips to get around not having root
+https://www.androidauthority.com/android-hacks-you-can-do-without-rooting-636661/
+- Manipulating the Android Manifest
+Para manipular el manifiesto se debe hacer lo siguiente:
+1. Abrir el `config.xml` y irse hasta donde dice `<platform name="android">`
+2. Allí se debe añadir lo siguiente:
+```xml
+<platform name="android">
+  <config-file target="AndroidManifest.xml" parent="/manifest/application">
+   <!-- Your manifest edits go here. These lines will be added in AndroidManifest.xml's <application> tag. -->
+  </config-file>
+</platform>
+```
+3. Y ya se podrá añadir la modificación en la parte en la que se encuentra el comentario.
+https://doc.batch.com/cordova/advanced/android-manifest-manipulation/
+- Defeating SSL/TLS pinning
+Esta es una practica de seguridad en la que se checkea el certificado de la conexión HTTPS que se esta realizando. De esta manera se evita la mayoría de los ataques de tipo MITM. Aunque esta protección se puede quitar usando Frida de la siguiente manera:
+1. Se debe conectar ADB a un dispositivo que este rooteado.
+2. Se debe instalar y iniciar Frida en el dispositivo.
+3. Se debe instalar e iniciar Frida en el PC
+4. Se debe seleccionar cual es la aplicación que se quiere modificar
+Para los pasos detallados se puede seguir la guía que aparece en la fuente.
+https://httptoolkit.com/blog/frida-certificate-pinning/
+- Defeating root detection
+https://www.youtube.com/watch?v=4X_go9r4nxM
+https://www.youtube.com/watch?v=sXcmJTidzlI
+- Dealing with apps in foreign languages and more
+https://developer.android.com/guide/topics/resources/app-languages
 # Part 2 - Dynamic Analysis
 
 -   - Monitoring data: LogCat, Insecure file storage, Android Keystore, etc.
