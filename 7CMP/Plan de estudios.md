@@ -237,8 +237,13 @@ https://developer.android.com/guide/topics/resources/app-languages
 # Part 2 - Dynamic Analysis
 
 -   - Monitoring data: LogCat, Insecure file storage, Android Keystore, etc.
-https://www.androidpolice.com/check-data-use-android-phone-tablet/
+1. **Logcat**: Una manera de ver los registros de una app es usando ADB que es una aplicación que se especializa en debuggear apps de android. Si se escribe `adb logcat` en la terminal podremos acceder a estos registros.
+2. **Insecure file storage**: Para chequear si esta vulnerabilidad esta en la app podremos ejecutar en la terminal `adb shell` donde podrémos ganar una consola en el dispositivo. Luego usando `ls -l /data/data/b3nac.injuredandroid/files` en el directorio de la app podremos revisar si estan bien seteados los permisos. Luego usando `adb -s 192.168.0.0 pull /data/data/b3nac.injuredandroid/files/<file> /root/Desktop` se podrá traer al PC el archivo en especifico.
+3. El Keystore es un contenedor ene el almacenamiento que se encarga de almacenar todas las llaves criptograficas usadas por las aplicaciones ya sea para autenticarse, comunicarse o sencillamente encriptar su información.
+https://www.xatakandroid.com/programacion-android/logcat-android-que-como-ver-este-registro-mensajes-sistema
+https://pallabjyoti218.medium.com/android-insecure-file-storage-e770eed9a3fa
 -   - The art of MitM: Intercepting Network Communications
+Existen distintas herramientas para esto, pero la más famosa de todas es BurpSuite que no es más que un proxy que se puede configurar para analizar cada petición realizada por una app.
 https://approov.io/blog/how-to-mitm-attack-the-api-of-an-android-app
 -   - The art of Instrumentation: Hooking with Xposed
 https://resources.infosecinstitute.com/topic/android-hacking-and-security-part-25-hooking-and-patching-android-apps-using-xposed-framework/
@@ -249,6 +254,7 @@ https://www.igi-global.com/article/a-privacy-protection-approach-based-on-androi
 https://www.netspi.com/blog/technical/mobile-application-penetration-testing/four-ways-bypass-android-ssl-verification-certificate-pinning/
 https://medium.com/@click4abhishekagarwal/pin-there-done-that-93033a351354
 -   - Modifying app behaviour at runtime
+Este es un metodo de asegurar que no se estan usando certificados de terceros en la comunicación, lo que puede evitar o prevenir cietrto tipo de ataques (sobre todo de tipo MITM). Una de las maneras de evitar esto es usando Frida (aunque hay opciones como Xposed o Objection)
 https://stackoverflow.com/questions/49470807/how-to-elegantly-change-the-programs-behavior-at-runtime
 https://httptoolkit.com/blog/android-reverse-engineering/
 # Part 3 - Test Your Skills
@@ -257,12 +263,32 @@ https://httptoolkit.com/blog/android-reverse-engineering/
 
 # Part 0 - iOS Security Crash Course
 
--   - The state of iOS Security
+## The state of iOS Security
+Apple es una de las compañías de moviles que más se ha enfocado en segurizar sus dispositivos, por lo que siempre tratan de mantener al días sus scanners de seguridad para evitar que aplicaciones con malware o con cambios sean ejecutadas en sus dispositivos.
 https://support.apple.com/guide/security/welcome/web
--   - iOS security architecture and its components
+
+## iOS security architecture and its components
+La seguridad en IOS se divide en dos partes. Por un lado esta la protección implementada a nivel de software y, por otro, esta las protecciones implementadas a nivel de hardware.
+
+### Software:
+- Las aplicaciones funcionan en un sandbox
+- Los directorios principales del sistema estan separados en particiones distintas (una para el Home y otra para los archivos del OS).
+- La protección de datos por permisos que permite saber si un dato se puede acceder desde una aplicación o no.
+- Y un sistema de archivos que permite almacenar los archivos necesarios para el sistema.
+
+### Hardware:
+- Los componentes del kernel del dispositivo estan estrictamente protegidos.
+- Un sistema que se encarga de almacenar la información de inicio del telefono (tales como el Touch ID).
+- Un chequeo de seguridad fisico a la hora de hacer pagos para optimizar la seguridad.
+- Un sistema de encriptado que se encarga de encriptar y deseincriptar archivos del sistema.
+- Las llaves de seguridad que son de confianza para el sistema.
 https://study.com/academy/lesson/ios-security-architecture-layers-features.html
--   - iOS app signing, sandboxing and provisioning
+
+## iOS app signing, sandboxing and provisioning
+
+
 https://developer.apple.com/documentation/technotes/tn3125-inside-code-signing-provisioning-profiles
+
 -   - iOS apps and the filesystem
 https://developer.apple.com/library/archive/documentation/FileManagement/Conceptual/FileSystemProgrammingGuide/FileSystemOverview/FileSystemOverview.html
 -   - Recommended lab setup tips
@@ -270,6 +296,7 @@ https://developer.apple.com/library/archive/documentation/FileManagement/Concept
 # Part 1 - Static Analysis with runtime checks
 
 -   - Tools and techniques to retrieve/decompile/reverse and review IPAs
+
 https://www.corellium.com/blog/ios-mobile-reverse-engineering
 https://www.apriorit.com/dev-blog/363-how-to-reverse-engineer-os-x-and-ios-software
 -   - Identification of the attack surface of iOS apps and general information gathering
